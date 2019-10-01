@@ -9,6 +9,7 @@ import org.sandboxpowered.sandbox.api.client.render.RenderUtil;
 import org.sandboxpowered.sandbox.api.component.Component;
 import org.sandboxpowered.sandbox.api.enchant.Enchantment;
 import org.sandboxpowered.sandbox.api.fluid.Fluid;
+import org.sandboxpowered.sandbox.api.fluid.FluidStack;
 import org.sandboxpowered.sandbox.api.item.Item;
 import org.sandboxpowered.sandbox.api.item.ItemStack;
 import org.sandboxpowered.sandbox.api.registry.Registry;
@@ -88,5 +89,11 @@ public class Functions {
     };
     public static final Function<ReadableCompoundTag, ItemStack> itemStackFromTagFunction = tag -> {
         throw new RuntimeException("No ItemStack Tag Function Loaded, Report this as a bug!");
+    };
+    public static final BiFunction<Fluid, Integer, FluidStack> fluidStackFunction = (s, v) -> {
+        throw new RuntimeException("No FluidStack Function Loaded, Report this as a bug!");
+    };
+    public static final Function<ReadableCompoundTag, FluidStack> fluidStackFromTagFunction = tag -> {
+        throw new RuntimeException("No FluidStack Tag Function Loaded, Report this as a bug!");
     };
 }

@@ -9,6 +9,7 @@ import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.world.World;
 import org.sandboxpowered.sandbox.api.world.WorldReader;
 
+//TODO: change to a fluid component
 public interface FluidContainer {
     default boolean canContainFluid(WorldReader world, Position position, BlockState state, Fluid fluid) {
         return fluid == Fluids.WATER;
