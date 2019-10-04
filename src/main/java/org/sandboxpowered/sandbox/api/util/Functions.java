@@ -18,6 +18,7 @@ import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.util.math.Vec3i;
 import org.sandboxpowered.sandbox.api.util.nbt.CompoundTag;
 import org.sandboxpowered.sandbox.api.util.nbt.ReadableCompoundTag;
+import org.sandboxpowered.sandbox.api.util.text.Formatting;
 import org.sandboxpowered.sandbox.api.util.text.Text;
 
 import java.util.function.BiFunction;
@@ -88,5 +89,8 @@ public class Functions {
     };
     public static final Function<ReadableCompoundTag, ItemStack> itemStackFromTagFunction = tag -> {
         throw new RuntimeException("No ItemStack Tag Function Loaded, Report this as a bug!");
+    };
+    public static final Function<String, Formatting> formattingFunction = name -> {
+        throw new RuntimeException("No Formatting Function Loaded, Report this as a bug!");
     };
 }
