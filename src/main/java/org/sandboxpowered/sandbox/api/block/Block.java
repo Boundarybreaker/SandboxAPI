@@ -33,15 +33,15 @@ public interface Block extends ItemProvider {
     @Override
     Mono<Item> asItem();
 
-    default <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component) {
+    default <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component) {
         return getComponent(world, position, state, component, Mono.empty());
     }
 
-    default <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component, Direction side) {
+    default <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Direction side) {
         return getComponent(world, position, state, component, Mono.of(side));
     }
 
-    default <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
+    default <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
         return Mono.empty();
     }
 

@@ -15,6 +15,7 @@ import org.sandboxpowered.sandbox.api.util.Direction;
 import org.sandboxpowered.sandbox.api.util.Mono;
 import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.world.World;
+import org.sandboxpowered.sandbox.api.world.WorldReader;
 
 public class BaseBlock implements Block {
     private final Settings settings;
@@ -49,17 +50,17 @@ public class BaseBlock implements Block {
     }
 
     @Override
-    public final <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component) {
+    public final <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component) {
         return getComponent(world, position, state, component, Mono.empty());
     }
 
     @Override
-    public final <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component, Direction side) {
+    public final <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Direction side) {
         return getComponent(world, position, state, component, Mono.of(side));
     }
 
     @Override
-    public <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
+    public <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
         if (this instanceof FluidLoggable && component == Components.FLUID_COMPONENT) {
             return (Mono<X>) Mono.of(new FluidLoggingContainer((FluidLoggable) this, world, position, state, side)); //TODO: is there some way to avoid this cast?
         } else if (hasBlockEntity()) {

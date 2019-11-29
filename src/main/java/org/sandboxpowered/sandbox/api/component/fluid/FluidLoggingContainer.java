@@ -8,17 +8,18 @@ import org.sandboxpowered.sandbox.api.util.Direction;
 import org.sandboxpowered.sandbox.api.util.Mono;
 import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.world.World;
+import org.sandboxpowered.sandbox.api.world.WorldReader;
 
 import java.util.function.Predicate;
 
 public class FluidLoggingContainer implements FluidContainer {
 	private FluidLoggable loggable;
-	private World world;
+	private WorldReader world;
 	private Position pos;
 	private BlockState state;
 	private Mono<Direction> direction;
 
-	public FluidLoggingContainer(FluidLoggable loggable, World world, Position pos, BlockState state, Mono<Direction> direction) {
+	public FluidLoggingContainer(FluidLoggable loggable, WorldReader world, Position pos, BlockState state, Mono<Direction> direction) {
 		this.loggable = loggable;
 		this.world = world;
 		this.pos = pos;

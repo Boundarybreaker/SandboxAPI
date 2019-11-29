@@ -10,6 +10,7 @@ import org.sandboxpowered.sandbox.api.util.Mono;
 import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.world.World;
 import org.sandboxpowered.sandbox.api.world.WorldReader;
+import org.sandboxpowered.sandbox.api.world.WorldWriter;
 
 public interface FluidLoggable {
 	default boolean canContainFluid(WorldReader world, Position position, BlockState state, Fluid fluid, Mono<Direction> direction) {
@@ -23,17 +24,19 @@ public interface FluidLoggable {
 		return FluidStack.empty();
 	}
 
-	default FluidStack fillWith(World world, Position position, BlockState state, FluidStack fluid, Mono<Direction> direction, boolean simulate) {
+	default FluidStack fillWith(WorldReader world, Position position, BlockState state, FluidStack fluid, Mono<Direction> direction, boolean simulate) {
+		if (!(world instanceof WorldWriter)) return fluid;
 		if (canContainFluid(world, position, state, fluid.getFluid(), direction)) {
-			if (!simulate) world.setBlockState(position, state.with(Properties.WATERLOGGED, true));
+			if (!simulate) ((WorldWriter)world).setBlockState(position, state.with(Properties.WATERLOGGED, true));
 			return fluid.shrink(1000);
 		}
 		return fluid;
 	}
 
-	default FluidStack drainFrom(World world, Position position, BlockState state, int amount, Mono<Direction> direction, boolean simulate) {
+	default FluidStack drainFrom(WorldReader world, Position position, BlockState state, int amount, Mono<Direction> direction, boolean simulate) {
+		if (!(world instanceof WorldWriter)) return FluidStack.empty();
 		if (state.get(Properties.WATERLOGGED) && amount <= 1000) {
-			if (!simulate) world.setBlockState(position, state.with(Properties.WATERLOGGED, false));
+			if (!simulate) ((WorldWriter)world).setBlockState(position, state.with(Properties.WATERLOGGED, false));
 			return FluidStack.of(Fluids.WATER, amount);
 		}
 		return FluidStack.empty();
