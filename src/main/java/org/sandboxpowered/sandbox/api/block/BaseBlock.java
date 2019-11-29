@@ -5,6 +5,8 @@ import org.sandboxpowered.sandbox.api.Registries;
 import org.sandboxpowered.sandbox.api.block.entity.BaseBlockEntity;
 import org.sandboxpowered.sandbox.api.block.entity.BlockEntity;
 import org.sandboxpowered.sandbox.api.component.Component;
+import org.sandboxpowered.sandbox.api.component.Components;
+import org.sandboxpowered.sandbox.api.component.fluid.FluidLoggingContainer;
 import org.sandboxpowered.sandbox.api.item.Item;
 import org.sandboxpowered.sandbox.api.state.BlockState;
 import org.sandboxpowered.sandbox.api.state.Properties;
@@ -12,7 +14,7 @@ import org.sandboxpowered.sandbox.api.state.StateFactory;
 import org.sandboxpowered.sandbox.api.util.Direction;
 import org.sandboxpowered.sandbox.api.util.Mono;
 import org.sandboxpowered.sandbox.api.util.math.Position;
-import org.sandboxpowered.sandbox.api.world.WorldReader;
+import org.sandboxpowered.sandbox.api.world.World;
 
 public class BaseBlock implements Block {
     private final Settings settings;
@@ -47,27 +49,30 @@ public class BaseBlock implements Block {
     }
 
     @Override
-    public final <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component) {
+    public final <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component) {
         return getComponent(world, position, state, component, Mono.empty());
     }
 
     @Override
-    public final <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Direction side) {
+    public final <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component, Direction side) {
         return getComponent(world, position, state, component, Mono.of(side));
     }
 
     @Override
-    public <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
+    public <X> Mono<X> getComponent(World world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
         if (hasBlockEntity()) {
             BlockEntity entity = world.getBlockEntity(position);
             if (entity instanceof BaseBlockEntity)
                 return ((BaseBlockEntity) entity).getComponent(component, side);
         }
+        else if (this instanceof FluidLoggable && component == Components.FLUID_COMPONENT) {
+            return (Mono<X>) Mono.of(new FluidLoggingContainer((FluidLoggable) this, world, position, state, side)); //TODO: is there some way to avoid this cast?
+        }
         return Mono.empty();
     }
 
     public void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-        if (this instanceof FluidContainer) {
+        if (this instanceof FluidLoggable && ((FluidLoggable)this).useWaterloggedProperty()) {
             builder.add(Properties.WATERLOGGED);
         }
     }

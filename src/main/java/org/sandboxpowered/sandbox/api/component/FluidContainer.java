@@ -6,7 +6,7 @@ import org.sandboxpowered.sandbox.api.util.IntegerRangeIterator;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-public interface FluidStorage extends Iterable<Integer> {
+public interface FluidContainer extends Iterable<Integer> {
 
     Predicate<FluidStack> ANY = stack -> true;
 
