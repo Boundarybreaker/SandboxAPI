@@ -39,7 +39,7 @@ public interface FluidLoggable {
 		return FluidStack.empty();
 	}
 
-	default boolean useWaterloggedProperty() {
+	default boolean needsWaterloggedProperty() {
 		return true;
 	}
 }
