@@ -62,7 +62,7 @@ public class BaseBlock implements Block {
     @Override
     public <X> Mono<X> getComponent(WorldReader world, Position position, BlockState state, Component<X> component, Mono<Direction> side) {
         if (this instanceof FluidLoggable && component == Components.FLUID_COMPONENT) {
-            return (Mono<X>) Mono.of(new FluidLoggingContainer((FluidLoggable) this, world, position, state, side)); //TODO: is there some way to avoid this cast?
+            return Mono.of(new FluidLoggingContainer((FluidLoggable) this, world, position, state, side)).cast();
         } else if (hasBlockEntity()) {
             BlockEntity entity = world.getBlockEntity(position);
             if (entity instanceof BaseBlockEntity)
