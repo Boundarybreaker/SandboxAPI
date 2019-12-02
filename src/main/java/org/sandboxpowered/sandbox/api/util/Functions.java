@@ -1,6 +1,6 @@
 package org.sandboxpowered.sandbox.api.util;
 
-import com.google.common.annotations.Beta;
+import com.google.common.graph.AbstractNetwork;
 import org.sandboxpowered.sandbox.api.block.Block;
 import org.sandboxpowered.sandbox.api.block.Material;
 import org.sandboxpowered.sandbox.api.block.entity.BlockEntity;
@@ -8,6 +8,7 @@ import org.sandboxpowered.sandbox.api.client.Client;
 import org.sandboxpowered.sandbox.api.client.render.RenderUtil;
 import org.sandboxpowered.sandbox.api.component.Component;
 import org.sandboxpowered.sandbox.api.enchant.Enchantment;
+import org.sandboxpowered.sandbox.api.entity.Entity;
 import org.sandboxpowered.sandbox.api.fluid.Fluid;
 import org.sandboxpowered.sandbox.api.fluid.FluidStack;
 import org.sandboxpowered.sandbox.api.item.Item;
@@ -15,6 +16,7 @@ import org.sandboxpowered.sandbox.api.item.ItemStack;
 import org.sandboxpowered.sandbox.api.registry.Registry;
 import org.sandboxpowered.sandbox.api.server.Server;
 import org.sandboxpowered.sandbox.api.state.Property;
+import org.sandboxpowered.sandbox.api.util.annotation.Internal;
 import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.util.math.Vec3i;
 import org.sandboxpowered.sandbox.api.util.nbt.CompoundTag;
@@ -25,7 +27,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@Beta
+@Internal
 public class Functions {
     public static final Function<String, Identity> identityFunction = s -> {
         throw new RuntimeException("No Identity Function Loaded, Report this as a bug!");
@@ -59,6 +61,9 @@ public class Functions {
     };
     public static final Function<Class<?>, Registry<?>> registryFunction = (c) -> {
         throw new RuntimeException("No Registry Function Loaded, Report this as a bug!");
+    };
+    public static final Function<Class<?>, Registry<?>> registryTypeFunction = (c) -> {
+        throw new RuntimeException("No Registry Type Function Loaded, Report this as a bug!");
     };
     public static final Supplier<CompoundTag> compoundTagCreator = () -> {
         throw new RuntimeException("No CompoundTag Creator Loaded, Report this as a bug!");
@@ -95,5 +100,10 @@ public class Functions {
     };
     public static final Function<ReadableCompoundTag, FluidStack> fluidStackFromTagFunction = tag -> {
         throw new RuntimeException("No FluidStack Tag Function Loaded, Report this as a bug!");
+    public static final Function<String, Entity.Type> entityTypeFunction = id -> {
+        throw new RuntimeException("No Entity Type Function Loaded, Report this as a bug!");
+    };
+    public static final Function<Entity, Entity.Type> entityTypeEntityFunction = id -> {
+        throw new RuntimeException("No Entity Type from Entity Function Loaded, Report this as a bug!");
     };
 }

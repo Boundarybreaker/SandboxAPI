@@ -1,6 +1,5 @@
 package org.sandboxpowered.sandbox.api.block;
 
-import com.google.common.annotations.Beta;
 import org.sandboxpowered.sandbox.api.Registries;
 import org.sandboxpowered.sandbox.api.block.entity.BaseBlockEntity;
 import org.sandboxpowered.sandbox.api.block.entity.BlockEntity;
@@ -13,6 +12,7 @@ import org.sandboxpowered.sandbox.api.state.Properties;
 import org.sandboxpowered.sandbox.api.state.StateFactory;
 import org.sandboxpowered.sandbox.api.util.Direction;
 import org.sandboxpowered.sandbox.api.util.Mono;
+import org.sandboxpowered.sandbox.api.util.annotation.Internal;
 import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.world.World;
 import org.sandboxpowered.sandbox.api.world.WorldReader;
@@ -36,7 +36,7 @@ public class BaseBlock implements Block {
         return stateFactory;
     }
 
-    @Beta
+    @Internal
     public final void setStateFactory(StateFactory<Block, BlockState> stateFactory) {
         this.stateFactory = stateFactory;
     }
