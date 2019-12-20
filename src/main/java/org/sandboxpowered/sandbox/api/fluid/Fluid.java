@@ -1,5 +1,8 @@
 package org.sandboxpowered.sandbox.api.fluid;
 
+
+import org.sandboxpowered.sandbox.api.component.Component;
+import org.sandboxpowered.sandbox.api.content.Content;
 import org.sandboxpowered.sandbox.api.item.Item;
 import org.sandboxpowered.sandbox.api.item.ItemProvider;
 import org.sandboxpowered.sandbox.api.state.BlockState;
@@ -11,7 +14,7 @@ import org.sandboxpowered.sandbox.api.util.math.Position;
 import org.sandboxpowered.sandbox.api.util.math.Vec3d;
 import org.sandboxpowered.sandbox.api.world.WorldReader;
 
-public interface Fluid extends ItemProvider {
+public interface Fluid extends ItemProvider, Content<Fluid> {
     FluidState getBaseState();
 
     StateFactory<Fluid, FluidState> getStateFactory();
@@ -56,4 +59,21 @@ public interface Fluid extends ItemProvider {
      * @return the bucket item for this fluid
      */
     Item asBucket();
+
+    default <X> Mono<X> getComponent(Component<X> component) {
+        return getComponent(component, Mono.empty());
+    }
+
+    default <X> Mono<X> getComponent(Component<X> component, FluidStack stack) {
+        return getComponent(component, Mono.of(stack));
+    }
+
+    default <X> Mono<X> getComponent(Component<X> component, Mono<FluidStack> stack) {
+        return Mono.empty();
+    }
+
+    @Override
+    default Class<Fluid> getContentType() {
+        return Fluid.class;
+    }
 }
