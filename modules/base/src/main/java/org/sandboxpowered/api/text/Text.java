@@ -1,6 +1,7 @@
 package org.sandboxpowered.api.text;
 
 import com.google.common.annotations.Beta;
+import com.mojang.brigadier.Message;
 import org.sandboxpowered.internal.InternalService;
 
 import java.util.List;
