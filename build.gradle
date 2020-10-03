@@ -1,70 +1,126 @@
 plugins {
-    id 'java'
+    id 'java-platform'
     id 'maven-publish'
-    id 'java-library'
+    id 'me.qoomon.git-versioning' version '3.0.0'
 }
+def ENV = System.getenv()
 
+def releasesRepoUrl = "https://nexus.sandboxpowered.org/repository/maven-releases/"
+def snapshotsRepoUrl = "https://nexus.sandboxpowered.org/repository/maven-snapshots/"
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-archivesBaseName = 'sandbox-api'
-version = System.getenv("COMMIT") ? "${project.api_version}-${System.getenv("COMMIT")}" : "${project.api_version}"
-group = project.maven_group
-
-repositories {
-    mavenCentral()
-    maven { url 'https://jitpack.io' }
-    maven { url 'https://libraries.minecraft.net' }
-}
-
-configurations {
-    shade
-    compile.extendsFrom shade
-}
-
-dependencies {
-    implementation group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-    shade 'com.electronwill.night-config:core:3.6.0'
-    shade 'com.electronwill.night-config:toml:3.6.0'
-    shade 'com.github.zafarkhaja:java-semver:0.9.0'
-    implementation group: 'com.google.guava', name: 'guava', version: '21.0'
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-    compile group: 'com.mojang', name: 'brigadier', version: '1.0.17'
-}
-
-jar {
-    from {
-        configurations.shade.collect { it.isDirectory() ? it : zipTree(it) }
+version = "${project.api_version}-SNAPSHOT"
+gitVersioning.apply {
+    branch {
+        pattern = 'develop'
+        versionFormat = '${version}'
+    }
+    branch {
+        pattern = 'feature/(?<feature>.+)'
+        versionFormat = '${feature}-SNAPSHOT'
+    }
+    tag {
+        pattern = 'release/(?<tagVersion>[0-9].*)'
+        versionFormat = '${tagVersion}'
+    }
+    commit {
+        versionFormat = '${commit.short}'
     }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+allprojects {
+    group = project.maven_group
 }
 
-artifacts {
-    archives sourcesJar
+archivesBaseName = 'platform'
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    version = rootProject.version
+
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
+    repositories {
+        maven { url 'https://nexus.sandboxpowered.org/repository/maven-public/' }
+    }
+
+    if (project.name != "base") {
+        dependencies {
+            api project(':base')
+        }
+    }
+
+    ext.genOutputDir = file("$buildDir/generated/resources")
+    def templateModJson = rootProject.file("template/module-fabric.mod.json")
+    task generateFabricModJson {
+        def outputFile = file("${project.ext.genOutputDir}/fabric.mod.json")
+        outputs.file(outputFile)
+        doLast {
+            outputFile.text = templateModJson.text.replaceAll("module_version", "${project.version}").replaceAll("module_id", "sandbox-${project.name}")
+        }
+    }
+    sourceSets.main.output.dir ext.genOutputDir, builtBy: generateFabricModJson
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId project.group
+                artifactId project.name
+                version project.version
+
+                artifact jar
+                artifact sourcesJar
+            }
+        }
+
+        repositories {
+            maven {
+                url = rootProject.version.endsWith("-SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username ENV.MAVEN_USER
+                    password ENV.MAVEN_PASS
+                }
+            }
+        }
+    }
+}
+
+repositories {
+    maven { url 'https://nexus.sandboxpowered.org/repository/maven-public/' }
+}
+
+dependencies {
+    constraints {
+        api project(":base")
+        api project(":rendering")
+
+        api project(":resources")
+    }
 }
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-            artifact sourcesJar
+        platform(MavenPublication) {
+            groupId = project.maven_group
+            artifactId = 'api'
+
+            from components.javaPlatform
         }
     }
+
     repositories {
-        if (System.getenv("BRANCH") == "master") {
-            maven {
-                url "s3://cdn.hrzn.studio/maven"
-                authentication {
-                    awsIm(AwsImAuthentication)
-                }
+        maven {
+            url = rootProject.version.endsWith("-SNAPSHOT") ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username ENV.MAVEN_USER
+                password ENV.MAVEN_PASS
             }
-        } else {
-            mavenLocal()
         }
     }
 }
